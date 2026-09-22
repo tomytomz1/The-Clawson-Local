@@ -36,5 +36,5 @@ values
 on conflict (slug) do nothing;
 
 insert into public.campaigns (slug, name, market, state, status, is_active, price_cents, max_advertisers, planned_reach, reach_is_estimated, included_revisions, reservation_minutes)
-values ('clawson-founding-edition', 'Founding Edition', 'Clawson', 'Michigan', 'PRELAUNCH', true, 35000, 20, 5800, true, 1, 30)
+values ('clawson-founding-edition', 'Founding Edition', 'Clawson', 'Michigan', 'OPEN', true, 35000, 20, 5800, true, 1, 30)
 on conflict (slug) do nothing;
