@@ -10,7 +10,7 @@ export const foundingCampaignSeed = {
   name: "Founding Edition",
   market: "Clawson",
   state: "Michigan",
-  status: "PRELAUNCH",
+  status: "OPEN",
   isActive: true,
   priceCents: 35000,
   maxAdvertisers: 20,
