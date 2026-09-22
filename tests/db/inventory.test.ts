@@ -6,7 +6,7 @@
  * to any database) or postgres://postgres:postgres@localhost:5432/postgres.
  * Skipped when no server is reachable.
  */
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { Client } from "pg";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
@@ -42,7 +42,8 @@ async function resetDatabase() {
   db = new Client({ connectionString: url.toString() });
   await db.connect();
   await db.query(read("tests/db/supabase-roles.sql"));
-  for (const f of ["supabase/migrations/20260922000000_inventory.sql"]) await db.query(read(f));
+  const migrations = readdirSync(new URL("../../supabase/migrations/", import.meta.url)).filter((f) => f.endsWith(".sql")).sort();
+  for (const f of migrations) await db.query(read(`supabase/migrations/${f}`));
   await db.query(read("supabase/seed.sql"));
   campaignId = (await db.query("select id from campaigns where is_active")).rows[0].id;
 }
@@ -308,6 +309,36 @@ describe.skipIf(!canRun)("database inventory", () => {
 
     it("anon cannot call internal trigger functions", async () => {
       await expect(asAnon(() => db.query("select campaigns_create_inventory()"))).rejects.toThrow();
+      for (const role of ["anon", "authenticated"]) {
+        for (const fn of ["campaigns_create_inventory()", "categories_create_inventory()"]) {
+          const { rows } = await db.query("select has_function_privilege($1, $2, 'execute') ok", [role, `public.${fn}`]);
+          expect(rows[0].ok, `${role} ${fn}`).toBe(false);
+        }
+        for (const fn of ["campaign_inventory(uuid)", "campaign_sold_count(uuid)"]) {
+          const { rows } = await db.query("select has_function_privilege($1, $2, 'execute') ok", [role, `public.${fn}`]);
+          expect(rows[0].ok, `${role} ${fn}`).toBe(true);
+        }
+      }
+    });
+
+    it("trigger functions still create inventory after the privilege changes", async () => {
+      await db.query("begin; set local role service_role");
+      try {
+        await db.query(
+          "insert into categories (slug, display_name, short_name, conflict_key) values ('trigger-check', 'Trigger Check', 'trigger check', 'trigger-check')",
+        );
+        const { rows } = await db.query(
+          "select count(*)::int n from campaign_categories where category_id = (select id from categories where slug = 'trigger-check')",
+        );
+        expect(rows[0].n).toBe(1);
+      } finally {
+        await db.query("rollback");
+      }
+    });
+
+    it("indexes the category_id foreign key", async () => {
+      const { rows } = await db.query("select 1 from pg_indexes where indexname = 'campaign_categories_category'");
+      expect(rows).toHaveLength(1);
     });
 
     it("service_role can manage inventory", async () => {
