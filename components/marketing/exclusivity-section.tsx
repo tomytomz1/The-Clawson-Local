@@ -1,7 +1,7 @@
 import { InventoryTable } from "@/components/inventory/inventory-table";
 import { ProgressMeter } from "@/components/inventory/progress-meter";
 import { Section } from "@/components/ui/section";
-import type { CampaignProgress, CategoryInventory } from "@/lib/inventory";
+import type { CampaignProgress, CategoryInventory } from "@/lib/inventory/progress";
 import type { CampaignConfig } from "@/types/campaign";
 
 /** Section 5: exclusivity explanation + live inventory from the data layer. */
@@ -27,7 +27,13 @@ export function ExclusivitySection({
       <div className="mt-10">
         <InventoryTable campaign={campaign} items={items} />
       </div>
-      {campaign.status === "PRELAUNCH" && (
+      {progress.soldOut && (
+        <p role="status" className="mt-4 border-l-4 border-accent bg-accent-tint px-4 py-3 font-semibold">
+          All {progress.max} positions on the {campaign.campaignName} are claimed. Remaining categories are closed for
+          this edition.
+        </p>
+      )}
+      {campaign.status === "PRELAUNCH" && !progress.soldOut && (
         <p className="mt-4 text-sm text-ink-muted">
           Online checkout for the {campaign.campaignName} is not open yet. Categories are not held before payment.
         </p>

@@ -17,22 +17,16 @@ import {
 } from "@/components/marketing/sections";
 import { StickyCta } from "@/components/marketing/sticky-cta";
 import { Section } from "@/components/ui/section";
-import { categorySeeds } from "@/config/categories";
 import { postalRoutes } from "@/config/postal-routes";
 import { formatCampaignPrice, getActiveCampaign, getPlannedReachPhrase } from "@/lib/campaign";
 import { getFaq, KEY_FAQ_IDS } from "@/lib/campaign/faq";
-import { getCategoryBySlug, getCategoryLandingLine } from "@/lib/categories";
-import { formatAvailability, getCampaignInventory } from "@/lib/inventory";
-
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return categorySeeds.filter((c) => c.active).map((c) => ({ slug: c.slug }));
-}
+import { getCategoryLandingLine } from "@/lib/categories";
+import { formatAvailability, getCampaignInventory, getCategoryBySlug } from "@/lib/inventory";
 
 export async function generateMetadata({ params }: PageProps<"/category/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const [category, campaign] = await Promise.all([getCategoryBySlug(slug), getActiveCampaign()]);
+  const campaign = await getActiveCampaign();
+  const category = await getCategoryBySlug(campaign, slug);
   if (!category) return {};
   return {
     title: { absolute: `${campaign.marketName} ${category.displayName} Advertising | ${campaign.brandName}` },
@@ -44,12 +38,11 @@ export async function generateMetadata({ params }: PageProps<"/category/[slug]">
 export default async function CategoryPage({ params }: PageProps<"/category/[slug]">) {
   const { slug } = await params;
   const campaign = await getActiveCampaign();
-  const category = await getCategoryBySlug(slug);
-  if (!category) notFound();
-
+  // Inactive or unknown categories are not in the inventory => 404.
   const { items } = await getCampaignInventory(campaign);
   const item = items.find((i) => i.category.slug === slug);
   if (!item) notFound();
+  const { category } = item;
 
   const name = category.displayName;
   const price = formatCampaignPrice(campaign);

@@ -20,6 +20,7 @@ import { ProgressMeter } from "@/components/inventory/progress-meter";
 import { Section } from "@/components/ui/section";
 import { postalRoutes } from "@/config/postal-routes";
 import { formatCampaignPrice, getActiveCampaign, getPlannedReachPhrase } from "@/lib/campaign";
+import { waitlistHref } from "@/lib/campaign/waitlist";
 import { getFaq, KEY_FAQ_IDS } from "@/lib/campaign/faq";
 import { getCampaignInventory } from "@/lib/inventory";
 import { site } from "@/config/site";
@@ -116,12 +117,21 @@ export default async function HomePage() {
         }}
       />
 
-      <StickyCta
-        label={`${progress.remaining} of ${progress.max} positions open`}
-        detail={`${price} one time • Ad design included`}
-        href={CHECK}
-        action="Check"
-      />
+      {progress.soldOut ? (
+        <StickyCta
+          label={`${campaign.campaignName} is full`}
+          detail={`${progress.claimed} of ${progress.max} positions claimed`}
+          href={waitlistHref(campaign)}
+          action="Waitlist"
+        />
+      ) : (
+        <StickyCta
+          label={`${progress.remaining} of ${progress.max} positions open`}
+          detail={`${price} one time • Ad design included`}
+          href={CHECK}
+          action="Check"
+        />
+      )}
     </>
   );
 }

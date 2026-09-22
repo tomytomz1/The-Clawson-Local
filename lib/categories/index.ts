@@ -1,16 +1,6 @@
-import { categorySeeds, type CategorySeed } from "@/config/categories";
+import type { Category } from "@/types/campaign";
 
-export type Category = CategorySeed;
-
-export async function getActiveCategories(): Promise<Category[]> {
-  return categorySeeds
-    .filter((c) => c.active)
-    .sort((a, b) => a.priority - b.priority);
-}
-
-export async function getCategoryBySlug(slug: string): Promise<Category | null> {
-  return categorySeeds.find((c) => c.active && c.slug === slug) ?? null;
-}
+export type { Category };
 
 /** Category-specific landing line, or the shared template line. */
 export function getCategoryLandingLine(category: Category, marketName: string): string {

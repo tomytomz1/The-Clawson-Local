@@ -26,7 +26,7 @@ export function SiteHeader() {
           href="/categories"
           className="rounded-sm bg-accent px-3 py-2 text-[0.8125rem] font-semibold whitespace-nowrap text-white hover:bg-accent-dark sm:px-3.5 sm:text-sm"
         >
-          Claim Your Category
+          Claim<span className="max-[359px]:hidden"> Your</span> Category
         </Link>
       </div>
     </header>

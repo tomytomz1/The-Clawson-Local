@@ -1,4 +1,4 @@
-import { formatAvailability } from "@/lib/inventory";
+import { formatAvailability } from "@/lib/inventory/progress";
 import type { InventoryStatus } from "@/types/campaign";
 
 const styles: Record<InventoryStatus, string> = {

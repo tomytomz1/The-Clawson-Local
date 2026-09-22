@@ -25,7 +25,7 @@ export function SiteFooter() {
           <p className="mt-1 font-serif text-sm text-ink-muted italic">{site.consumerTagline}</p>
           <a
             href={`mailto:${site.email.public}`}
-            className="mt-4 inline-block text-sm font-medium text-accent underline underline-offset-4"
+            className="mt-4 inline-block text-sm font-medium whitespace-nowrap text-accent underline underline-offset-4"
           >
             {site.email.public}
           </a>

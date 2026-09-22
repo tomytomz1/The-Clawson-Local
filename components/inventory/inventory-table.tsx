@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { formatCampaignPrice } from "@/lib/campaign";
-import type { CategoryInventory } from "@/lib/inventory";
+import { formatCampaignPrice } from "@/lib/campaign/format";
+import type { CategoryInventory } from "@/lib/inventory/progress";
 import type { CampaignConfig } from "@/types/campaign";
 import { StatusBadge } from "./status-badge";
 

@@ -17,8 +17,13 @@ export function formatCents(cents: number): string {
   }).format(cents / 100);
 }
 
+/** Verified count once reach is no longer an estimate, else the planning number. */
+export function getReachCount(campaign: CampaignConfig): number {
+  return !campaign.reachIsEstimated && campaign.verifiedReach ? campaign.verifiedReach : campaign.plannedReach;
+}
+
 export function formatReachCount(campaign: CampaignConfig): string {
-  return number.format(campaign.plannedReach);
+  return number.format(getReachCount(campaign));
 }
 
 /**
@@ -51,8 +56,9 @@ export function getResidenceQualifier(campaign: CampaignConfig): string {
 
 /** "About 6¢" — cost per residence derived from price and reach. */
 export function getCostPerResidenceLabel(campaign: CampaignConfig): string {
-  if (campaign.plannedReach <= 0) return "";
-  const cents = campaign.priceCents / campaign.plannedReach;
+  const reach = getReachCount(campaign);
+  if (reach <= 0) return "";
+  const cents = campaign.priceCents / reach;
   if (cents < 100) return `About ${Math.round(cents)}¢`;
   return `About ${formatCents(Math.round(cents))}`;
 }
@@ -68,16 +74,21 @@ export function formatRevisions(campaign: CampaignConfig): string {
   return `${word} included revision${n === 1 ? "" : "s"}`;
 }
 
-/** Formats an ISO date or returns null when the value is still unknown. */
+/**
+ * Formats a date or timestamp, or returns null when the value is still
+ * unknown. Date-only values ("2026-11-02") are calendar dates and must not be
+ * shifted by time zone.
+ */
 export function formatCampaignDate(iso: string | null): string | null {
   if (!iso) return null;
-  const d = new Date(iso);
+  const dateOnly = /^\d{4}-\d{2}-\d{2}$/.test(iso);
+  const d = new Date(dateOnly ? `${iso}T00:00:00Z` : iso);
   if (Number.isNaN(d.getTime())) return null;
   return d.toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
     year: "numeric",
-    timeZone: "America/Detroit",
+    timeZone: dateOnly ? "UTC" : "America/Detroit",
   });
 }
 

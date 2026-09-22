@@ -1,13 +1,9 @@
 import { site } from "@/config/site";
-import { formatCampaignPrice, isCheckoutOpen } from "@/lib/campaign";
-import type { CategoryInventory } from "@/lib/inventory";
+import { formatCampaignPrice, formatReachCount, isCheckoutOpen } from "@/lib/campaign/format";
+import type { CategoryInventory } from "@/lib/inventory/progress";
 import type { CampaignConfig } from "@/types/campaign";
+import { waitlistHref } from "@/lib/campaign/waitlist";
 import { StatusBadge } from "./status-badge";
-
-function waitlistHref(name: string, campaign: CampaignConfig) {
-  const subject = `Waitlist: ${name} — ${campaign.brandName} ${campaign.campaignName}`;
-  return `mailto:${site.email.public}?subject=${encodeURIComponent(subject)}`;
-}
 
 /**
  * Above-the-fold purchase box for a category page. Status comes from the
@@ -18,7 +14,7 @@ export function ClaimPanel({ campaign, item }: { campaign: CampaignConfig; item:
   const { category, status } = item;
   const name = category.displayName;
   const price = formatCampaignPrice(campaign);
-  const count = campaign.plannedReach.toLocaleString("en-US");
+  const count = formatReachCount(campaign);
   const facts = [
     `${price} one time`,
     campaign.reachIsEstimated ? `Approximately ${count} planned residences` : `${count} residences`,
@@ -79,7 +75,7 @@ export function ClaimPanel({ campaign, item }: { campaign: CampaignConfig; item:
             </>
           )}
           {(status === "SOLD" || status === "CLOSED") && (
-            <a id="waitlist" href={waitlistHref(name, campaign)} className="btn-secondary w-full">
+            <a id="waitlist" href={waitlistHref(campaign, name)} className="btn-secondary w-full">
               Join Waitlist
             </a>
           )}

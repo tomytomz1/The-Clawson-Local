@@ -1,90 +1,44 @@
-import type { Category } from "@/lib/categories";
-import { getActiveCategories } from "@/lib/categories";
-import type { CampaignConfig, InventoryStatus } from "@/types/campaign";
+import "server-only";
+import { connection } from "next/server";
+import { cache } from "react";
+import { mapInventoryCategory, type InventoryRow } from "@/lib/db/mappers";
+import { DataUnavailableError, getPublicClient } from "@/lib/db/supabase";
+import type { CampaignConfig, Category } from "@/types/campaign";
+import { getCampaignProgress, type CampaignProgress, type CategoryInventory } from "./progress";
 
-/** A sale or checkout hold against a conflict key. */
-export type InventoryClaim = {
-  conflictKey: string;
-  kind: "SOLD" | "HELD";
-  holdExpiresAt?: Date | null;
-};
+export * from "./progress";
 
-export type CategoryInventory = {
-  category: Category;
-  status: InventoryStatus;
-};
-
-export type CampaignProgress = {
-  claimed: number;
-  max: number;
-  remaining: number;
-  percent: number;
+export type CampaignInventory = {
+  items: CategoryInventory[];
+  progress: CampaignProgress;
 };
 
 /**
- * Pure derivation of category status from real claims. The same function is
- * used once claims come from the database (Phase 2), so there is exactly one
- * place where status is decided.
+ * Live inventory for a campaign. Status is derived in Postgres
+ * (campaign_inventory()) — conflict groups, expired holds, sold-out and
+ * manual closure — so the app never decides availability itself.
+ * Throws on failure; there is no fallback inventory.
  */
-export function deriveInventory(
-  campaign: CampaignConfig,
-  categories: Category[],
-  claims: InventoryClaim[],
-  now: Date = new Date(),
-): CategoryInventory[] {
-  const sold = new Set(claims.filter((c) => c.kind === "SOLD").map((c) => c.conflictKey));
-  const held = new Set(
-    claims
-      .filter((c) => c.kind === "HELD" && (!c.holdExpiresAt || c.holdExpiresAt > now))
-      .map((c) => c.conflictKey),
-  );
-  const campaignClosed =
-    campaign.status === "SOLD_OUT" ||
-    campaign.status === "PRODUCTION" ||
-    campaign.status === "MAILED" ||
-    sold.size >= campaign.maxAdvertisers;
+export const getCampaignInventory = cache(async (campaign: CampaignConfig): Promise<CampaignInventory> => {
+  await connection();
+  try {
+    const db = getPublicClient();
+    const [inv, sold] = await Promise.all([
+      db.rpc("campaign_inventory", { p_campaign_id: campaign.id }),
+      db.rpc("campaign_sold_count", { p_campaign_id: campaign.id }),
+    ]);
+    if (inv.error) throw inv.error;
+    if (sold.error) throw sold.error;
+    const items = ((inv.data ?? []) as InventoryRow[]).map((row) => ({ category: mapInventoryCategory(row), status: row.status }));
+    return { items, progress: getCampaignProgress(campaign, Number(sold.data ?? 0)) };
+  } catch (err) {
+    console.error("[data] getCampaignInventory failed", err);
+    throw new DataUnavailableError("Inventory unavailable", { cause: err });
+  }
+});
 
-  return categories.map((category) => {
-    let status: InventoryStatus;
-    if (sold.has(category.conflictKey)) status = "SOLD";
-    else if (campaignClosed || category.manuallyClosed) status = "CLOSED";
-    else if (held.has(category.conflictKey)) status = "HELD";
-    else status = "AVAILABLE";
-    return { category, status };
-  });
-}
-
-export function getCampaignProgress(
-  campaign: CampaignConfig,
-  paidAdvertisers: number,
-): CampaignProgress {
-  const max = campaign.maxAdvertisers;
-  const claimed = Math.min(paidAdvertisers, max);
-  return {
-    claimed,
-    max,
-    remaining: max - claimed,
-    percent: max > 0 ? Math.round((claimed / max) * 100) : 0,
-  };
-}
-
-/**
- * Phase 1: no payment system exists yet, so there are no sales or holds.
- * Phase 2 replaces this with a database query for SOLD campaign_categories
- * and ACTIVE unexpired reservations.
- */
-async function loadClaims(): Promise<InventoryClaim[]> {
-  return [];
-}
-
-export async function getCampaignInventory(campaign: CampaignConfig) {
-  const [categories, claims] = await Promise.all([getActiveCategories(), loadClaims()]);
-  const items = deriveInventory(campaign, categories, claims);
-  const paid = new Set(claims.filter((c) => c.kind === "SOLD").map((c) => c.conflictKey)).size;
-  return { items, progress: getCampaignProgress(campaign, paid) };
-}
-
-export async function getCategoryStatus(
+/** Active category + live status by slug, or null (inactive/unknown => 404). */
+export async function getCategoryAvailability(
   campaign: CampaignConfig,
   slug: string,
 ): Promise<CategoryInventory | null> {
@@ -92,15 +46,6 @@ export async function getCategoryStatus(
   return items.find((i) => i.category.slug === slug) ?? null;
 }
 
-export function formatAvailability(status: InventoryStatus): string {
-  switch (status) {
-    case "AVAILABLE":
-      return "Available";
-    case "HELD":
-      return "Checkout in progress";
-    case "SOLD":
-      return "Claimed";
-    case "CLOSED":
-      return "Closed";
-  }
+export async function getCategoryBySlug(campaign: CampaignConfig, slug: string): Promise<Category | null> {
+  return (await getCategoryAvailability(campaign, slug))?.category ?? null;
 }

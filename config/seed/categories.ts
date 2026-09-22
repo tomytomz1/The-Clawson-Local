@@ -1,10 +1,11 @@
 /**
- * Seed list of advertiser categories.
+ * SEED DATA ONLY. The `categories` table is authoritative at runtime; edit
+ * categories in /admin. This file generates supabase/seed.sql
+ * (`npm run db:seed:generate`) for new environments.
  *
  * `conflictKey` enforces exclusivity: one paid advertiser per conflict key per
- * edition. `aliases` are alternate names that resolve to the same conflict key
- * (e.g. "Furnace Repair" -> hvac). Phase 2 seeds the `categories` table from
- * this list; the database then becomes authoritative.
+ * edition. `aliases` are alternate names that belong to the same conflict group
+ * (e.g. "Furnace Repair" -> hvac).
  */
 export type CategorySeed = {
   slug: string;
@@ -17,7 +18,6 @@ export type CategorySeed = {
   landingLine: string | null;
   priority: number;
   active: boolean;
-  manuallyClosed: boolean;
 };
 
 const c = (
@@ -37,7 +37,6 @@ const c = (
   landingLine,
   priority,
   active: true,
-  manuallyClosed: false,
 });
 
 export const categorySeeds: CategorySeed[] = [

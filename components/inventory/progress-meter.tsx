@@ -1,4 +1,4 @@
-import type { CampaignProgress } from "@/lib/inventory";
+import type { CampaignProgress } from "@/lib/inventory/progress";
 import type { CampaignConfig } from "@/types/campaign";
 
 /** Real campaign progress, computed from paid advertisers only. */

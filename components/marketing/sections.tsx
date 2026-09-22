@@ -14,7 +14,7 @@ import {
   getCostPerResidenceLabel,
   getReachLabel,
   getResidenceQualifier,
-} from "@/lib/campaign";
+} from "@/lib/campaign/format";
 import type { CampaignConfig, PostalRoute } from "@/types/campaign";
 
 type P = { campaign: CampaignConfig };
