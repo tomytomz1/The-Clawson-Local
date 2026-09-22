@@ -100,7 +100,7 @@ describe.skipIf(!canRun)("database inventory", () => {
         name: "Founding Edition",
         market: "Clawson",
         state: "Michigan",
-        status: "PRELAUNCH",
+        status: "OPEN",
         price_cents: 35000,
         max_advertisers: 20,
         planned_reach: 5800,
@@ -230,7 +230,7 @@ describe.skipIf(!canRun)("database inventory", () => {
       expect(await soldCount()).toBe(1);
       for (const s of slugs.slice(1, 19)) await sell(s);
       expect(await soldCount()).toBe(19);
-      expect((await db.query("select status from campaigns where id = $1", [campaignId])).rows[0].status).toBe("PRELAUNCH");
+      expect((await db.query("select status from campaigns where id = $1", [campaignId])).rows[0].status).toBe("OPEN");
       expect((await inventory()).filter((r) => r.status === "AVAILABLE")).toHaveLength(11);
 
       await sell(slugs[19]);
