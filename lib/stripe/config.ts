@@ -50,9 +50,22 @@ export function getWebhookSecret(): string {
   return secret;
 }
 
-/** Livemode events are only accepted by a deployment running a live key. */
+/**
+ * Which Stripe mode this deployment's secret key belongs to, independent of
+ * STRIPE_ALLOW_LIVE. Webhook livemode validation must follow the key type
+ * itself: closing public checkout (STRIPE_ALLOW_LIVE unset) must not cause
+ * correctly signed live events for already-created sessions to be ignored.
+ */
+export function stripeKeyMode(key = process.env.STRIPE_SECRET_KEY): "live" | "test" | "missing" {
+  if (!key) return "missing";
+  if (/^(sk|rk)_live_/.test(key)) return "live";
+  if (/^(sk|rk)_test_/.test(key)) return "test";
+  return "missing";
+}
+
+/** Livemode events are only accepted by a deployment whose secret key is a live key. */
 export function expectedLivemode(): boolean {
-  return stripeKeyStatus() === "live";
+  return stripeKeyMode() === "live";
 }
 
 /**
