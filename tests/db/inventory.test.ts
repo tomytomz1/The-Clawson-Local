@@ -92,12 +92,12 @@ describe.skipIf(!canRun)("database inventory", () => {
   });
 
   describe("seed", () => {
-    it("loads one active Founding Edition campaign with the working values and null dates", async () => {
+    it("loads one active Founder’s Edition campaign with the working values and null dates", async () => {
       const { rows } = await db.query("select * from campaigns where is_active");
       expect(rows).toHaveLength(1);
       const c = rows[0];
       expect(c).toMatchObject({
-        name: "Founding Edition",
+        name: "Founder’s Edition",
         market: "Clawson",
         state: "Michigan",
         status: "OPEN",

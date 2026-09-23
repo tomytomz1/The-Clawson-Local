@@ -23,7 +23,7 @@ describe("admin basic auth", () => {
 });
 
 const base = {
-  name: "Founding Edition",
+  name: "Founder’s Edition",
   market: "Clawson",
   state: "Michigan",
   status: "OPEN",

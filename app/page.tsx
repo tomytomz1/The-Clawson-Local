@@ -20,7 +20,7 @@ import { StickyCta } from "@/components/marketing/sticky-cta";
 import { ProgressMeter } from "@/components/inventory/progress-meter";
 import { Section } from "@/components/ui/section";
 import { postalRoutes } from "@/config/postal-routes";
-import { formatCampaignPrice, getActiveCampaign, getPlannedReachPhrase } from "@/lib/campaign";
+import { formatCampaignPrice, getActiveCampaign, getEditionLabel, getPlannedReachPhrase } from "@/lib/campaign";
 import { waitlistHref } from "@/lib/campaign/waitlist";
 import { getFaq, KEY_FAQ_IDS } from "@/lib/campaign/faq";
 import { getCampaignInventory } from "@/lib/inventory";
@@ -41,7 +41,7 @@ export default async function HomePage() {
         <div className="container-page grid gap-12 py-10 sm:py-16 lg:grid-cols-[1.15fr_1fr] lg:items-center lg:gap-16 lg:py-20">
           <div>
             <p className="eyebrow">
-              {campaign.campaignName.replace(/ Edition$/, ` ${campaign.marketName} Edition`)} • Category-exclusive
+              {getEditionLabel(campaign)} • Category-exclusive
               local advertising
             </p>
             <h1 id="hero-heading" className="headline mt-4 text-5xl leading-[1.02] sm:text-6xl lg:text-7xl">

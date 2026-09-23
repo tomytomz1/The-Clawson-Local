@@ -7,7 +7,7 @@
  */
 export const foundingCampaignSeed = {
   slug: "clawson-founding-edition",
-  name: "Founding Edition",
+  name: "Founder’s Edition",
   market: "Clawson",
   state: "Michigan",
   status: "OPEN",

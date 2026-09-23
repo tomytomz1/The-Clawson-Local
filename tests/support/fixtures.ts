@@ -7,7 +7,7 @@ export function makeCampaign(overrides: Partial<CampaignConfig> = {}): CampaignC
     brandName: "The Clawson Local",
     marketName: "Clawson",
     state: "Michigan",
-    campaignName: "Founding Edition",
+    campaignName: "Founder’s Edition",
     status: "PRELAUNCH",
     priceCents: 35000,
     maxAdvertisers: 20,

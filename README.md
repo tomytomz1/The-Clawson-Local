@@ -22,7 +22,7 @@ npm test                      # unit + database tests
 | Path | Purpose |
 | --- | --- |
 | `supabase/migrations/` | Schema, inventory rules, RLS. **Source of truth for availability logic.** |
-| `supabase/seed.sql` | Generated seed (Founding Edition + 30 categories). Regenerate with `npm run db:seed:generate`. |
+| `supabase/seed.sql` | Generated seed (Founder’s Edition + 30 categories). Regenerate with `npm run db:seed:generate`. |
 | `config/seed/` | Seed inputs only. Runtime values come from the database. |
 | `config/site.ts` | Static brand/contact facts and unconfirmed business details (legal name, address, phone) |
 | `config/postal-routes.ts` | USPS carrier routes (empty until routes are locked) |

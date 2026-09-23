@@ -7,7 +7,7 @@ import { getCampaignInventory } from "@/lib/inventory";
 
 export const metadata: Metadata = {
   title: "Advertiser Categories",
-  description: "Live category availability for The Clawson Local Founding Edition. One business per category.",
+  description: "Live category availability for The Clawson Local Founder’s Edition. One business per category.",
   alternates: { canonical: "/categories" },
 };
 

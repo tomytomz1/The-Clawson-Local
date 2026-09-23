@@ -40,21 +40,25 @@ export function HeroBackdrop() {
         {/* Wide: fade the street scene under the paragraph, CTA and checklist so only the clock reads strongly. */}
         <div className="absolute inset-0 hidden bg-linear-to-b from-transparent from-40% via-paper/75 via-60% to-paper/85 lg:block" />
       </div>
-      <p className="container-page relative -mt-6 pb-4 text-right text-xs text-ink-soft sm:-mt-10 lg:-mt-14">
+      <p className="container-page relative -mt-6 pb-4 text-center text-xs text-ink-soft sm:-mt-10 lg:-mt-14 lg:text-right">
         <span className="inline-block rounded-sm bg-paper/90 px-2 py-0.5">
-          <span aria-hidden="true">📍 </span>Downtown Clawson, 14 Mile &amp; Main
-          <span className="mx-1.5" aria-hidden="true">
-            ·
+          <span className="whitespace-nowrap">
+            <span aria-hidden="true">📍 </span>Downtown Clawson, 14 Mile &amp; Main
           </span>
-          Photo:{" "}
-          <a href={HERO_PHOTO.sourceUrl} className="underline underline-offset-2" rel="noopener">
-            {HERO_PHOTO.author}
-          </a>
-          ,{" "}
-          <a href={HERO_PHOTO.licenseUrl} className="underline underline-offset-2" rel="license noopener">
-            {HERO_PHOTO.license}
-          </a>
-          , adapted
+          <span className="mx-1.5 hidden sm:inline" aria-hidden="true">
+            ·
+          </span>{" "}
+          <span className="whitespace-nowrap">
+            Photo:{" "}
+            <a href={HERO_PHOTO.sourceUrl} className="underline underline-offset-2" rel="noopener">
+              {HERO_PHOTO.author}
+            </a>
+            ,{" "}
+            <a href={HERO_PHOTO.licenseUrl} className="underline underline-offset-2" rel="license noopener">
+              {HERO_PHOTO.license}
+            </a>
+            , adapted
+          </span>
         </span>
       </p>
     </>
