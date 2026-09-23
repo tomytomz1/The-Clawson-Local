@@ -30,7 +30,8 @@ export const metadata: Metadata = {
 /**
  * Stripe redirects here after payment. This page only READS state: the
  * webhook is what marks a reservation paid, so until it has, the buyer sees a
- * short "Confirming your payment…" state that re-checks itself.
+ * short "Payment received. We’re confirming your category." state that
+ * re-checks itself (it never says "secured" until the webhook has confirmed).
  */
 export default async function CheckoutSuccessPage({
   searchParams,
@@ -125,11 +126,12 @@ export default async function CheckoutSuccessPage({
     return (
       <PageHeader
         eyebrow={`${site.name} • ${edition}`}
-        title="Confirming your payment…"
+        title="Payment received. We’re confirming your category."
       >
         <p>
-          {reservation.categoryName} is held for you while Stripe confirms the
-          payment. This usually takes a few seconds.
+          This usually takes a few seconds. If this page doesn&rsquo;t update,
+          don&rsquo;t pay again. We&rsquo;ll show the next step here once your
+          category is confirmed.
           {reservation.status === "PROCESSING" &&
             " Your payment method can take a few days to settle; the category stays held for you until it does."}
         </p>
