@@ -69,8 +69,10 @@ export function MailerMockup({
           </div>
         </div>
       </div>
-      <figcaption className="mt-4 text-center text-xs text-ink-muted">
-        Illustrative 9&Prime; × 12&Prime; layout. Final edition design will differ.
+      <figcaption className="mt-4 text-center text-xs text-ink-soft">
+        <span className="inline-block rounded-sm bg-paper/90 px-2 py-0.5">
+          Illustrative 9&Prime; × 12&Prime; layout. Final edition design will differ.
+        </span>
       </figcaption>
     </figure>
   );
