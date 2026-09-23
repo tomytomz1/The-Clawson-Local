@@ -5,12 +5,33 @@ import type { CampaignConfig } from "@/types/campaign";
 import { waitlistHref } from "@/lib/campaign/waitlist";
 import { StatusBadge } from "./status-badge";
 
+const CHECKOUT_MESSAGES: Record<string, string> = {
+  category_held: "Another business started checkout for this category a moment ago. It is temporarily held.",
+  category_sold: "This category was just claimed.",
+  category_closed: "This category is closed for this edition.",
+  campaign_full: "All positions in this edition are claimed or being checked out right now.",
+  campaign_not_open: "Online checkout for this edition is not open.",
+  category_not_found: "This category is not available.",
+  unavailable: "Online checkout is not available right now. Please email us to claim this category.",
+  checkout_failed: "We couldn't start checkout. Nothing was charged and the category was not held. Please try again.",
+};
+
 /**
  * Above-the-fold purchase box for a category page. Status comes from the
- * inventory layer; the checkout form (terms acceptance + Stripe redirect) is
- * wired in Phase 3.
+ * database (campaign_inventory); it is never updated optimistically. "Claim"
+ * posts to /api/checkout, which holds the category and redirects to Stripe.
  */
-export function ClaimPanel({ campaign, item }: { campaign: CampaignConfig; item: CategoryInventory }) {
+export function ClaimPanel({
+  campaign,
+  item,
+  checkoutEnabled = false,
+  checkoutError,
+}: {
+  campaign: CampaignConfig;
+  item: CategoryInventory;
+  checkoutEnabled?: boolean;
+  checkoutError?: string;
+}) {
   const { category, status } = item;
   const name = category.displayName;
   const price = formatCampaignPrice(campaign);
@@ -30,6 +51,11 @@ export function ClaimPanel({ campaign, item }: { campaign: CampaignConfig; item:
         <StatusBadge status={status} />
       </div>
       <div className="p-5 sm:p-6">
+        {checkoutError && CHECKOUT_MESSAGES[checkoutError] && (
+          <p role="alert" className="mb-4 border-l-4 border-warn bg-warn-tint px-3 py-2 text-sm font-medium">
+            {CHECKOUT_MESSAGES[checkoutError]}
+          </p>
+        )}
         {status === "SOLD" && (
           <p className="mb-4 font-serif text-2xl font-semibold">{name} has been claimed.</p>
         )}
@@ -38,8 +64,8 @@ export function ClaimPanel({ campaign, item }: { campaign: CampaignConfig; item:
         )}
         {status === "HELD" && (
           <p className="mb-4 text-ink-soft">
-            Another business is completing checkout for this category. If checkout isn&apos;t completed within{" "}
-            {campaign.reservationMinutes} minutes, it becomes available again.
+            {name} is temporarily held: another advertiser is currently checking out. If they don&apos;t complete
+            payment within about {campaign.reservationMinutes} minutes, it becomes available again.
           </p>
         )}
 
@@ -57,11 +83,22 @@ export function ClaimPanel({ campaign, item }: { campaign: CampaignConfig; item:
         </ul>
 
         <div className="mt-6">
-          {/* Phase 3 adds the terms-acceptance form that starts Stripe Checkout when OPEN. */}
-          {status === "AVAILABLE" && (
+          {status === "AVAILABLE" && checkoutEnabled && isCheckoutOpen(campaign) && (
+            <form action="/api/checkout" method="post">
+              <input type="hidden" name="category" value={category.slug} />
+              <button type="submit" className="btn-primary w-full" aria-describedby="checkout-note">
+                Claim for {price}
+              </button>
+              <p id="checkout-note" className="mt-3 text-sm text-ink-soft">
+                Secure checkout by Stripe. {name} is held for you for about {campaign.reservationMinutes} minutes
+                while you pay; it is yours once payment is confirmed.
+              </p>
+            </form>
+          )}
+          {status === "AVAILABLE" && !(checkoutEnabled && isCheckoutOpen(campaign)) && (
             <>
               <button type="button" className="btn-primary w-full" disabled aria-describedby="checkout-note">
-                Claim {name}
+                Claim for {price}
               </button>
               <p id="checkout-note" className="mt-3 text-sm text-ink-soft">
                 {isCheckoutOpen(campaign)
@@ -80,7 +117,7 @@ export function ClaimPanel({ campaign, item }: { campaign: CampaignConfig; item:
             </a>
           )}
           {status === "HELD" && (
-            <p className="text-sm font-semibold text-warn">Checkout in progress</p>
+            <p className="text-sm font-semibold text-warn">Temporarily held — check back soon</p>
           )}
         </div>
         {status === "AVAILABLE" && (

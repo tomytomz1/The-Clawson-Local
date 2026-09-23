@@ -35,7 +35,7 @@ export function formatAvailability(status: InventoryStatus): string {
     case "AVAILABLE":
       return "Available";
     case "HELD":
-      return "Checkout in progress";
+      return "Temporarily held";
     case "SOLD":
       return "Claimed";
     case "CLOSED":
