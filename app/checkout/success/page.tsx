@@ -5,10 +5,26 @@ import { PageHeader } from "@/components/ui/page-header";
 import { site } from "@/config/site";
 import { formatCents } from "@/lib/campaign/format";
 import { getReservationBySession } from "@/lib/checkout/reservations";
+import { serverRpc } from "@/lib/checkout/server";
+import { ensureIntakeLink } from "@/lib/intake/service";
+
+/** The private intake link for a paid advertiser, or null if intake is unavailable. */
+async function intakeLinkFor(advertiserId: string | null): Promise<string | null> {
+  if (!advertiserId) return null;
+  try {
+    const token = await ensureIntakeLink(advertiserId, { rpc: serverRpc() });
+    return token ? `/intake/${token}` : null;
+  } catch (err) {
+    console.error("[intake] could not prepare intake link", err instanceof Error ? err.message : err);
+    return null;
+  }
+}
 
 export const metadata: Metadata = {
   title: "Checkout",
   robots: { index: false, follow: false },
+  // The page can carry the private intake link.
+  referrer: "no-referrer",
 };
 
 /**
@@ -45,13 +61,33 @@ export default async function CheckoutSuccessPage({
     `${reservation.marketName} ${reservation.campaignName}`.trim();
 
   if (reservation.status === "PAID") {
+    const intakeHref = await intakeLinkFor(reservation.advertiserId);
     return (
       <>
         <PageHeader
           eyebrow={`${site.name} • ${edition}`}
-          title="Payment confirmed. Your category is secured."
+          title="Your category is secured."
         >
-          <p>We&apos;ll collect your ad materials in the next step.</p>
+          {intakeHref ? (
+            <>
+              <a href={intakeHref} className="btn-primary mt-1">
+                Submit your ad materials
+              </a>
+              <p className="mt-4">
+                We&rsquo;ll use these materials to create your ad and send you
+                a proof before anything prints.
+              </p>
+              <p className="mt-3 text-base">
+                This link is private to your business. Bookmark it to come
+                back later.
+              </p>
+            </>
+          ) : (
+            <p>
+              Payment confirmed. We&apos;ll contact you to collect your ad
+              materials.
+            </p>
+          )}
         </PageHeader>
         <div className="container-page pb-16">
           <div className="max-w-3xl">
