@@ -10,11 +10,11 @@ export const site = {
   advertiserTagline: "Reach Clawson Together.",
   servingLine: "Serving Clawson, Michigan",
 
-  // Downtown Clawson (Main St & 14 Mile Rd). Used for geo meta tags, structured
-  // data and the GPS tag embedded in public/images/downtown-clawson.webp.
+  // Downtown Clawson (14 Mile Rd & Main St, where the hero photo was taken).
+  // Used for geo meta tags, structured data and the image's GPS tag.
   geo: {
-    latitude: 42.53336,
-    longitude: -83.14631,
+    latitude: 42.533294,
+    longitude: -83.146058,
     placename: "Clawson, Michigan",
     region: "US-MI",
     postalCode: "48017",

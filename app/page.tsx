@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { FaqList } from "@/components/marketing/faq-list";
 import { ExclusivitySection } from "@/components/marketing/exclusivity-section";
-import { HeroBackdrop } from "@/components/marketing/hero-backdrop";
+import { HERO_PHOTO, HeroBackdrop } from "@/components/marketing/hero-backdrop";
 import { MailerMockup } from "@/components/marketing/mailer-mockup";
 import {
   AdDesignSection,
@@ -121,11 +121,15 @@ export default async function HomePage() {
             },
             image: {
               "@type": "ImageObject",
-              contentUrl: new URL("/images/downtown-clawson.webp", site.url).toString(),
-              description: "Downtown Clawson, Michigan: street clock and the City of Clawson building",
+              contentUrl: new URL(HERO_PHOTO.path, site.url).toString(),
+              description: HERO_PHOTO.description,
+              creator: { "@type": "Person", name: HERO_PHOTO.author },
+              creditText: `${HERO_PHOTO.author}, ${HERO_PHOTO.license}`,
+              license: HERO_PHOTO.licenseUrl,
+              isBasedOn: HERO_PHOTO.sourceUrl,
               contentLocation: {
                 "@type": "Place",
-                name: "Downtown Clawson, Main Street & 14 Mile Road",
+                name: "Downtown Clawson, 14 Mile Road & Main Street",
                 address: {
                   "@type": "PostalAddress",
                   addressLocality: "Clawson",
