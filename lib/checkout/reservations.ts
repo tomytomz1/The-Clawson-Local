@@ -14,6 +14,8 @@ export type BuyerReservation = {
   amountCents: number;
   currency: string;
   businessName: string | null;
+  /** Set once paid; used server-side to derive the private intake link. */
+  advertiserId: string | null;
   categoryName: string;
   categorySlug: string;
   campaignName: string;
@@ -29,12 +31,13 @@ type Row = {
   amount_cents: number;
   currency: string;
   business_name: string | null;
+  advertiser_id: string | null;
   categories: { display_name: string; slug: string } | null;
   campaigns: { name: string; market: string } | null;
 };
 
 const COLUMNS =
-  "id, status, stripe_checkout_session_id, stripe_checkout_url, expires_at, amount_cents, currency, business_name, categories(display_name, slug), campaigns(name, market)";
+  "id, status, stripe_checkout_session_id, stripe_checkout_url, expires_at, amount_cents, currency, business_name, advertiser_id, categories(display_name, slug), campaigns(name, market)";
 
 function map(r: Row): BuyerReservation {
   return {
@@ -46,6 +49,7 @@ function map(r: Row): BuyerReservation {
     amountCents: r.amount_cents,
     currency: r.currency,
     businessName: r.business_name,
+    advertiserId: r.advertiser_id,
     categoryName: r.categories?.display_name ?? "Your category",
     categorySlug: r.categories?.slug ?? "",
     campaignName: r.campaigns?.name ?? "",

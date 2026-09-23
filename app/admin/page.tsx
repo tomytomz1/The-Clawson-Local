@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { connection } from "next/server";
 import { StatusBadge } from "@/components/inventory/status-badge";
 import { requireAdmin } from "@/lib/admin/auth";
@@ -148,6 +149,11 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
         <h1 className="headline mt-1 text-3xl">
           {campaign.brandName} — {campaign.campaignName}
         </h1>
+        <p className="mt-2">
+          <Link href="/admin/advertisers" className="text-accent underline underline-offset-2">
+            Advertisers &amp; intake status →
+          </Link>
+        </p>
         {ok && <p role="status" className="mt-3 bg-ok-tint px-3 py-2 text-ok">{ok}</p>}
         {error && <p role="alert" className="mt-3 bg-accent-tint px-3 py-2 text-accent-dark">{error}</p>}
       </header>
