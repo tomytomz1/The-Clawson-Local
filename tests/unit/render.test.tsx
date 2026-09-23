@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { ClaimPanel } from "@/components/inventory/claim-panel";
 import { InventoryTable } from "@/components/inventory/inventory-table";
 import { ProgressMeter } from "@/components/inventory/progress-meter";
+import { FulfillmentSection } from "@/components/marketing/sections";
 import { getCampaignProgress, type CategoryInventory } from "@/lib/inventory/progress";
 import type { InventoryStatus } from "@/types/campaign";
 import { makeCampaign, makeCategory } from "../support/fixtures";
@@ -116,5 +117,16 @@ describe("ProgressMeter", () => {
   it.each([0, 1, 19, 20])("renders %i of 20 positions claimed", (n) => {
     const html = renderToStaticMarkup(<ProgressMeter campaign={campaign} progress={getCampaignProgress(campaign, n)} />);
     expect(text(html)).toContain(`${n} of 20 positions claimed`);
+  });
+});
+
+describe("FulfillmentSection", () => {
+  it("states the approved fill requirement, sales cutoff and outside fulfillment date", () => {
+    const html = renderToStaticMarkup(<FulfillmentSection campaign={campaign} />);
+    const t = text(html);
+    expect(t).toContain("all 20 advertising positions are paid");
+    expect(t).toContain("November 30, 2026");
+    expect(t).toContain("February 28, 2027");
+    expect(t).toContain("full refund or transfer");
   });
 });

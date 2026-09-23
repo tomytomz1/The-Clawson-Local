@@ -17,12 +17,12 @@ export function makeCampaign(overrides: Partial<CampaignConfig> = {}): CampaignC
     includedRevisions: 1,
     reservationMinutes: 30,
     salesOpenAt: null,
-    salesCloseAt: null,
+    salesCloseAt: "2026-12-01T04:59:59Z",
     assetDeadline: null,
     proofDeadline: null,
     printDate: null,
     mailingDate: null,
-    outsideFulfillmentDate: null,
+    outsideFulfillmentDate: "2027-02-28",
     ...overrides,
   };
 }

@@ -219,6 +219,7 @@ export function HowItWorksSection({ campaign }: P) {
 
 /* ---------- 12. Trust / fulfillment ---------- */
 export function FulfillmentSection({ campaign }: P) {
+  const salesClose = formatCampaignDate(campaign.salesCloseAt);
   const outside = formatCampaignDate(campaign.outsideFulfillmentDate);
   return (
     <Section id="what-youre-buying" title="Exactly what you're paying for. No vague marketing promises.">
@@ -244,13 +245,13 @@ export function FulfillmentSection({ campaign }: P) {
         <aside className="self-start border-2 border-ink bg-card p-6">
           <p className="eyebrow">Fulfillment policy</p>
           <p className="mt-3 font-serif text-xl leading-snug font-semibold">
-            If we cannot fulfill the {campaign.campaignName} by the outside fulfillment date stated at checkout, you
-            may choose a full refund or transfer your payment to the next edition.
+            The {campaign.campaignName} is scheduled to proceed once all {campaign.maxAdvertisers} advertising
+            positions are paid.
           </p>
           <p className="mt-4 text-sm text-ink-muted">
-            {outside
-              ? `Outside fulfillment date for this edition: ${outside}.`
-              : "The outside fulfillment date will be published here and shown at checkout before sales open."}
+            {salesClose && outside
+              ? `If the campaign does not fill by ${salesClose}, you may choose a full refund or transfer to the next edition. If the campaign proceeds, mailing will be completed no later than ${outside}.`
+              : "The sales cutoff and outside fulfillment date will be published here and shown in the Advertiser Terms before sales open."}
           </p>
         </aside>
       </div>

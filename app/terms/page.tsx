@@ -21,6 +21,7 @@ export const metadata: Metadata = {
 export default async function TermsPage() {
   const campaign = await getActiveCampaign();
   const price = formatCampaignPrice(campaign);
+  const salesClose = formatCampaignDate(campaign.salesCloseAt);
   const outside = formatCampaignDate(campaign.outsideFulfillmentDate);
   const sections: [string, React.ReactNode][] = [
     [
@@ -69,9 +70,10 @@ export default async function TermsPage() {
     [
       "Fulfillment",
       <>
-        If we cannot fulfill the {campaign.campaignName} by the outside fulfillment date stated at checkout, you may
-        choose a full refund or transfer your payment to the next edition. Outside fulfillment date:{" "}
-        <Pending value={outside} label="Outside fulfillment date" />.
+        The {campaign.campaignName} is scheduled to proceed once all {campaign.maxAdvertisers} advertising positions
+        are paid. If the campaign does not fill by <Pending value={salesClose} label="Sales cutoff date" />, you may
+        choose a full refund or transfer your payment to the next edition. If the campaign proceeds, mailing will be
+        completed no later than <Pending value={outside} label="Outside fulfillment date" />.
       </>,
     ],
     [

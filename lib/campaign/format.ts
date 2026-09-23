@@ -92,6 +92,10 @@ export function formatCampaignDate(iso: string | null): string | null {
   });
 }
 
-export function isCheckoutOpen(campaign: CampaignConfig): boolean {
-  return campaign.status === "OPEN";
+export function isCheckoutOpen(campaign: CampaignConfig, now = Date.now()): boolean {
+  if (campaign.status !== "OPEN" || !campaign.salesCloseAt || !campaign.outsideFulfillmentDate) return false;
+
+  const salesClose = new Date(campaign.salesCloseAt).getTime();
+  const outside = new Date(`${campaign.outsideFulfillmentDate}T23:59:59Z`).getTime();
+  return Number.isFinite(salesClose) && Number.isFinite(outside) && now <= salesClose && outside > salesClose;
 }

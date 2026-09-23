@@ -5,6 +5,7 @@ import {
   getCostPerResidenceLabel,
   getPlannedReachPhrase,
   getReachLabel,
+  isCheckoutOpen,
 } from "@/lib/campaign/format";
 import { makeCampaign } from "../support/fixtures";
 
@@ -34,5 +35,13 @@ describe("campaign copy helpers", () => {
   it("returns null for unknown dates and does not shift calendar dates", () => {
     expect(formatCampaignDate(null)).toBeNull();
     expect(formatCampaignDate("2026-11-02")).toBe("November 2, 2026");
+  });
+
+  it("fails checkout closed unless the approved dates are present and ordered", () => {
+    const open = makeCampaign({ status: "OPEN" });
+    expect(isCheckoutOpen(open, Date.parse("2026-09-23T12:00:00Z"))).toBe(true);
+    expect(isCheckoutOpen({ ...open, salesCloseAt: null }, Date.parse("2026-09-23T12:00:00Z"))).toBe(false);
+    expect(isCheckoutOpen({ ...open, outsideFulfillmentDate: null }, Date.parse("2026-09-23T12:00:00Z"))).toBe(false);
+    expect(isCheckoutOpen(open, Date.parse("2026-12-01T05:00:00Z"))).toBe(false);
   });
 });
