@@ -3,10 +3,12 @@
  * Copy follows the product spec; all prices, counts and dates come from the
  * campaign config through lib/campaign helpers.
  */
+import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Section } from "@/components/ui/section";
 import { site } from "@/config/site";
+import founderPhoto from "@/public/images/founder-tomas.webp";
 import {
   formatCampaignDate,
   formatCampaignPrice,
@@ -384,17 +386,14 @@ export function FounderSection() {
       <div className="grid gap-10 md:grid-cols-[16rem_1fr] md:items-start">
         <div>
           <div className="aspect-[4/5] w-full max-w-64 overflow-hidden border-2 border-ink bg-paper-deep">
-            {founder.photoUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={founder.photoUrl} alt={`${founder.name}, ${site.name}`} className="h-full w-full object-cover" />
-            ) : (
-              <div className="flex h-full flex-col items-center justify-center text-center">
-                <span aria-hidden="true" className="font-serif text-7xl font-bold text-rule">
-                  {founder.name[0]}
-                </span>
-                <span className="mt-2 px-4 text-xs text-ink-muted">Founder photo coming soon</span>
-              </div>
-            )}
+            <Image
+              src={founderPhoto}
+              alt={founder.photoAlt}
+              placeholder="blur"
+              sizes="256px"
+              quality={50}
+              className="h-full w-full object-cover"
+            />
           </div>
           <address className="mt-4 text-sm leading-relaxed not-italic">
             <strong className="block font-serif text-lg">{founder.name}</strong>

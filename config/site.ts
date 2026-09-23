@@ -28,10 +28,10 @@ export const site = {
   },
 
   founder: {
-    name: "Tomas",
-    // Drop a real photo at /public/founder.jpg and set this to "/founder.jpg".
-    // Never use stock photography here.
-    photoUrl: null as string | null,
+    name: "Tomás",
+    // Real photo only (never stock): public/images/founder-tomas.webp, shown by
+    // FounderSection via a static import so it is resized and blur-placeheld.
+    photoAlt: "Tomás at a Detroit Tigers game at Comerica Park",
     // Only set true once verified. Copy says "serving Clawson" otherwise.
     isClawsonResident: false,
   },
