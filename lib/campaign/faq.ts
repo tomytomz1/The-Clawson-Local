@@ -28,7 +28,7 @@ export function getFaq(campaign: CampaignConfig): FaqItem[] {
     {
       id: "hold",
       q: "Can you hold my category?",
-      a: "We don't hold categories based on interest alone. Your category is secured when payment is completed.",
+      a: `We don't hold categories based on interest alone. When you click Claim, the category is held for you for about ${campaign.reservationMinutes} minutes while you complete checkout; it becomes yours once payment is confirmed.`,
     },
     {
       id: "need-ad",
@@ -84,7 +84,7 @@ export function getFaq(campaign: CampaignConfig): FaqItem[] {
     {
       id: "after-pay",
       q: "What happens after I pay?",
-      a: "You'll immediately receive the advertiser intake form. Submit your materials, we'll create your ad, you'll approve the proof, and we'll keep you updated through printing and mailing.",
+      a: "Your category is secured as soon as payment is confirmed. We'll collect your ad materials in the next step, create your ad, send you a proof to approve, and keep you updated through printing and mailing.",
     },
     {
       id: "talk",

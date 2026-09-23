@@ -14,6 +14,7 @@ const CHECKOUT_MESSAGES: Record<string, string> = {
   category_not_found: "This category is not available.",
   unavailable: "Online checkout is not available right now. Please email us to claim this category.",
   checkout_failed: "We couldn't start checkout. Nothing was charged and the category was not held. Please try again.",
+  active_hold: "You already have an active checkout hold. Complete or cancel that checkout before claiming another category.",
 };
 
 /**
@@ -26,11 +27,14 @@ export function ClaimPanel({
   item,
   checkoutEnabled = false,
   checkoutError,
+  activeHoldId,
 }: {
   campaign: CampaignConfig;
   item: CategoryInventory;
   checkoutEnabled?: boolean;
   checkoutError?: string;
+  /** The buyer's own active reservation, when checkoutError is "active_hold". */
+  activeHoldId?: string;
 }) {
   const { category, status } = item;
   const name = category.displayName;
@@ -54,6 +58,14 @@ export function ClaimPanel({
         {checkoutError && CHECKOUT_MESSAGES[checkoutError] && (
           <p role="alert" className="mb-4 border-l-4 border-warn bg-warn-tint px-3 py-2 text-sm font-medium">
             {CHECKOUT_MESSAGES[checkoutError]}
+            {checkoutError === "active_hold" && activeHoldId && (
+              <>
+                {" "}
+                <a href={`/checkout/cancel?reservation=${activeHoldId}`} className="underline underline-offset-2">
+                  View your checkout
+                </a>
+              </>
+            )}
           </p>
         )}
         {status === "SOLD" && (

@@ -1,4 +1,5 @@
 import type Stripe from "stripe";
+import { IP_HOLD_LIMIT, IP_WINDOW_MINUTES } from "./abuse";
 import { firstRow, type Rpc } from "./rpc";
 
 /** Stripe requires Checkout Sessions to live at least 30 minutes. */
@@ -18,17 +19,22 @@ export const RESERVE_ERRORS = [
   "category_sold",
   "category_held",
   "campaign_full",
+  "client_has_active_hold",
+  "rate_limited",
 ] as const;
 export type ReserveErrorCode = (typeof RESERVE_ERRORS)[number] | "checkout_failed";
 
 export class CheckoutError extends Error {
   constructor(
     readonly code: ReserveErrorCode,
-    options?: { cause?: unknown },
+    options?: { cause?: unknown; retryAfterSeconds?: number },
   ) {
     super(code, options);
     this.name = "CheckoutError";
+    this.retryAfterSeconds = options?.retryAfterSeconds;
   }
+  /** Set for rate_limited: seconds until another hold may be created. */
+  readonly retryAfterSeconds?: number;
 }
 
 export type ReservationRow = {
@@ -59,6 +65,9 @@ export type StartCheckoutInput = {
   origin: string;
   /** Absolute URL of the advertiser terms shown next to the consent checkbox. */
   termsUrl: string;
+  /** HMAC digests for the abuse guard (see lib/checkout/abuse.ts). */
+  clientHash?: string;
+  ipHash?: string;
 };
 
 export type StartCheckoutResult = { reservationId: string; sessionId: string; url: string; holdExpiresAt: string };
@@ -136,10 +145,19 @@ export async function startCheckout(
         p_campaign_id: input.campaignId,
         p_category_id: input.categoryId,
         p_hold_minutes: PROVISIONAL_HOLD_MINUTES,
+        p_client_hash: input.clientHash ?? null,
+        p_ip_hash: input.ipHash ?? null,
+        p_ip_limit: IP_HOLD_LIMIT,
+        p_ip_window_minutes: IP_WINDOW_MINUTES,
       }),
     );
   } catch (err) {
-    const code = RESERVE_ERRORS.find((c) => err instanceof Error && err.message.includes(c));
+    const message = err instanceof Error ? err.message : "";
+    const code = RESERVE_ERRORS.find((c) => message.includes(c));
+    if (code === "rate_limited") {
+      const seconds = Number(message.match(/rate_limited:(\d+)/)?.[1] ?? IP_WINDOW_MINUTES * 60);
+      throw new CheckoutError(code, { cause: err, retryAfterSeconds: seconds });
+    }
     if (code) throw new CheckoutError(code, { cause: err });
     throw err;
   }

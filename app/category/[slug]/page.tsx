@@ -22,7 +22,10 @@ import { formatCampaignPrice, getActiveCampaign, getPlannedReachPhrase } from "@
 import { getFaq, KEY_FAQ_IDS } from "@/lib/campaign/faq";
 import { getCategoryLandingLine } from "@/lib/categories";
 import { formatAvailability, getCampaignInventory, getCategoryBySlug } from "@/lib/inventory";
+import { isAbuseGuardConfigured } from "@/lib/checkout/abuse";
 import { isStripeCheckoutEnabled } from "@/lib/stripe/config";
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function generateMetadata({ params }: PageProps<"/category/[slug]">): Promise<Metadata> {
   const { slug } = await params;
@@ -38,7 +41,7 @@ export async function generateMetadata({ params }: PageProps<"/category/[slug]">
 
 export default async function CategoryPage({ params, searchParams }: PageProps<"/category/[slug]">) {
   const { slug } = await params;
-  const { checkout } = await searchParams;
+  const { checkout, hold } = await searchParams;
   const campaign = await getActiveCampaign();
   // Inactive or unknown categories are not in the inventory => 404.
   const { items } = await getCampaignInventory(campaign);
@@ -80,8 +83,9 @@ export default async function CategoryPage({ params, searchParams }: PageProps<"
               <ClaimPanel
                 campaign={campaign}
                 item={item}
-                checkoutEnabled={isStripeCheckoutEnabled()}
+                checkoutEnabled={isStripeCheckoutEnabled() && isAbuseGuardConfigured()}
                 checkoutError={typeof checkout === "string" ? checkout : undefined}
+                activeHoldId={typeof hold === "string" && UUID_RE.test(hold) ? hold : undefined}
               />
             </div>
           </div>

@@ -497,7 +497,8 @@ describe.skipIf(!canRun)("phase 3 checkout", () => {
           expect(rows[0], `${role} ${t}`).toEqual({ s: false, i: false });
         }
         for (const f of [
-          "reserve_category(uuid, uuid, integer)",
+          "reserve_category(uuid, uuid, integer, text, text, integer, integer)",
+          "client_active_reservation(text)",
           "fulfill_reservation(uuid, text, uuid, uuid, integer, text, text, text, text, text, boolean, text)",
           "release_reservation(uuid, public.reservation_status, text, text)",
           "attach_checkout_session(uuid, text, text, timestamptz, integer)",
