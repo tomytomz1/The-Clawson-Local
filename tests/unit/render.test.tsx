@@ -27,7 +27,7 @@ describe("InventoryTable", () => {
     const t = text(html);
     expect(t).toContain("Available");
     expect(t).toContain("Claimed");
-    expect(t).toContain("Checkout in progress");
+    expect(t).toContain("Temporarily held");
     expect(t).toContain("Closed");
   });
 
@@ -57,7 +57,31 @@ describe("ClaimPanel", () => {
     const t = render("AVAILABLE");
     expect(t).toContain("$350 one time");
     expect(t).toContain("Approximately 5,800 planned residences");
-    expect(t).toContain("Claim Plumbing");
+    expect(t).toContain("Claim for $350");
+  });
+
+  it("AVAILABLE with checkout enabled posts only the category slug to /api/checkout", () => {
+    const open = makeCampaign({ status: "OPEN" });
+    const html = renderToStaticMarkup(<ClaimPanel campaign={open} item={item("plumbing", "Plumbing", "AVAILABLE")} checkoutEnabled />);
+    expect(html).toContain('action="/api/checkout"');
+    expect(html).toContain('name="category" value="plumbing"');
+    expect(html).not.toMatch(/name="(price|amount)/);
+    expect(html).not.toContain("disabled");
+  });
+
+  it("AVAILABLE without Stripe configured keeps the button disabled", () => {
+    const html = renderToStaticMarkup(<ClaimPanel campaign={makeCampaign({ status: "OPEN" })} item={item("plumbing", "Plumbing", "AVAILABLE")} />);
+    expect(html).not.toContain("/api/checkout");
+    expect(html).toContain("disabled");
+  });
+
+  it("shows a checkout error message from the redirect", () => {
+    const t = text(
+      renderToStaticMarkup(
+        <ClaimPanel campaign={campaign} item={item("plumbing", "Plumbing", "HELD")} checkoutError="category_held" />,
+      ),
+    );
+    expect(t).toContain("temporarily held");
   });
 
   it("verified reach drops 'approximately'", () => {
@@ -68,22 +92,23 @@ describe("ClaimPanel", () => {
 
   it("HELD does not identify the holder and offers no claim", () => {
     const t = render("HELD");
-    expect(t).toContain("Checkout in progress");
-    expect(t).not.toContain("Claim Plumbing");
+    expect(t).toContain("Temporarily held");
+    expect(t).toContain("another advertiser is currently checking out");
+    expect(t).not.toContain("Claim for");
   });
 
   it("SOLD shows claimed + waitlist", () => {
     const t = render("SOLD");
     expect(t).toContain("Plumbing has been claimed.");
     expect(t).toContain("Join Waitlist");
-    expect(t).not.toContain("Claim Plumbing");
+    expect(t).not.toContain("Claim for");
   });
 
   it("CLOSED shows closed + waitlist", () => {
     const t = render("CLOSED");
     expect(t).toContain("Plumbing is closed for this edition.");
     expect(t).toContain("Join Waitlist");
-    expect(t).not.toContain("Claim Plumbing");
+    expect(t).not.toContain("Claim for");
   });
 });
 

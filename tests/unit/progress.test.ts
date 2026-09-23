@@ -27,7 +27,7 @@ describe("campaign progress", () => {
 
   it("labels statuses for humans", () => {
     expect(formatAvailability("AVAILABLE")).toBe("Available");
-    expect(formatAvailability("HELD")).toBe("Checkout in progress");
+    expect(formatAvailability("HELD")).toBe("Temporarily held");
     expect(formatAvailability("SOLD")).toBe("Claimed");
     expect(formatAvailability("CLOSED")).toBe("Closed");
   });
