@@ -36,12 +36,13 @@ export const site = {
     isClawsonResident: false,
   },
 
+  legalName: "Tomás Beltrán, doing business as The Clawson Local" as string | null,
+
   // ---- UNKNOWN: fill in only once confirmed ----
-  legalName: null as string | null, // FINAL BUSINESS LEGAL NAME
   mailingAddress: null as string | null, // FINAL BUSINESS MAILING ADDRESS
   phone: null as string | null, // FINAL PHONE NUMBER
   printVendor: null as string | null, // FINAL PRINT/MAIL VENDOR
 
   // Versioned so checkout acceptance can record which terms were accepted.
-  termsVersion: "2026-09-draft-1",
+  termsVersion: "2026-09-23",
 } as const;

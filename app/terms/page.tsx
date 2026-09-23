@@ -16,8 +16,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/terms" },
 };
 
-// NOTE: Drafted from the product spec. Have it reviewed by counsel before
-// sales open, then bump site.termsVersion.
 export default async function TermsPage() {
   const campaign = await getActiveCampaign();
   const price = formatCampaignPrice(campaign);
