@@ -30,6 +30,12 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
   },
+  other: {
+    "geo.region": site.geo.region,
+    "geo.placename": site.geo.placename,
+    "geo.position": `${site.geo.latitude};${site.geo.longitude}`,
+    ICBM: `${site.geo.latitude}, ${site.geo.longitude}`,
+  },
 };
 
 export const viewport: Viewport = {

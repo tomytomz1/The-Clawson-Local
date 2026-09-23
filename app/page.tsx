@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FaqList } from "@/components/marketing/faq-list";
 import { ExclusivitySection } from "@/components/marketing/exclusivity-section";
+import { HeroBackdrop } from "@/components/marketing/hero-backdrop";
 import { MailerMockup } from "@/components/marketing/mailer-mockup";
 import {
   AdDesignSection,
@@ -36,7 +37,7 @@ export default async function HomePage() {
   return (
     <>
       {/* 1. Hero */}
-      <section aria-labelledby="hero-heading" className="overflow-hidden bg-paper">
+      <section aria-labelledby="hero-heading" className="relative isolate overflow-hidden bg-paper">
         <div className="container-page grid gap-12 py-10 sm:py-16 lg:grid-cols-[1.15fr_1fr] lg:items-center lg:gap-16 lg:py-20">
           <div>
             <p className="eyebrow">
@@ -71,6 +72,7 @@ export default async function HomePage() {
           </div>
           <MailerMockup campaign={campaign} slots={items.map((i) => i.category.displayName)} />
         </div>
+        <HeroBackdrop />
       </section>
 
       <SharedCostSection campaign={campaign} ctaHref={CHECK} />
@@ -112,7 +114,28 @@ export default async function HomePage() {
             name: site.name,
             url: site.url,
             email: site.email.public,
-            areaServed: { "@type": "City", name: `${campaign.marketName}, ${campaign.state}` },
+            areaServed: {
+              "@type": "City",
+              name: `${campaign.marketName}, ${campaign.state}`,
+              geo: { "@type": "GeoCoordinates", latitude: site.geo.latitude, longitude: site.geo.longitude },
+            },
+            image: {
+              "@type": "ImageObject",
+              contentUrl: new URL("/images/downtown-clawson.webp", site.url).toString(),
+              description: "Downtown Clawson, Michigan: street clock and the City of Clawson building",
+              contentLocation: {
+                "@type": "Place",
+                name: "Downtown Clawson, Main Street & 14 Mile Road",
+                address: {
+                  "@type": "PostalAddress",
+                  addressLocality: "Clawson",
+                  addressRegion: "MI",
+                  postalCode: site.geo.postalCode,
+                  addressCountry: "US",
+                },
+                geo: { "@type": "GeoCoordinates", latitude: site.geo.latitude, longitude: site.geo.longitude },
+              },
+            },
           }),
         }}
       />
