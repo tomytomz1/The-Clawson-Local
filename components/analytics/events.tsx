@@ -2,6 +2,7 @@
 
 import type { FormEvent, ReactNode } from "react";
 import { useEffect } from "react";
+import { sanitizedPageLocation } from "./google-analytics";
 
 type EventParams = Record<string, unknown>;
 
@@ -24,7 +25,9 @@ function ensureGtag(): (...args: unknown[]) => void {
 
 function track(name: string, params: EventParams) {
   if (!process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || typeof window === "undefined") return;
-  ensureGtag()("event", name, params);
+  // The gtag config pins page_location to the landing URL, so pass the
+  // current (sanitized) URL or every funnel event reports the landing page.
+  ensureGtag()("event", name, { page_location: sanitizedPageLocation(), ...params });
 }
 
 function item(categorySlug: string, categoryName: string, campaignName: string, marketName: string): EcommerceItem {
