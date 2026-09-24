@@ -8,7 +8,7 @@ const measurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 const PRIVATE_QUERY_KEYS = ["session_id", "reservation", "hold", "checkout", "token"] as const;
 
-function sanitizedPageLocation(): string {
+export function sanitizedPageLocation(): string {
   const url = new URL(window.location.href);
   for (const key of PRIVATE_QUERY_KEYS) url.searchParams.delete(key);
   return url.toString();
