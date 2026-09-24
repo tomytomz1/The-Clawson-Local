@@ -8,8 +8,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/privacy" },
 };
 
-// NOTE: Drafted from the V1 scope. Review before launch and update when
-// analytics, payment and email providers are finalized.
 export default function PrivacyPage() {
   const sections: [string, string][] = [
     [
@@ -17,8 +15,12 @@ export default function PrivacyPage() {
       "When you purchase a placement we collect the business and contact information you provide at checkout and in the advertiser intake form, plus the files you upload for your ad. Payment card details are entered on our payment processor's hosted checkout page and are not stored by us.",
     ],
     [
+      "Analytics and marketing measurement",
+      "We use Google Analytics to understand site usage and marketing performance, including page visits, category interest, checkout starts, purchases, traffic sources and campaign parameters such as UTM tags. We configure analytics so private checkout identifiers and advertiser contact information are not intentionally sent to Google Analytics.",
+    ],
+    [
       "How we use it",
-      "We use your information to fulfill your placement: to build your ad, send proofs, send transactional updates about the edition, and keep records of approvals. We record marketing source information (such as UTM parameters) to understand which channels bring advertisers to the site.",
+      "We use your information to fulfill your placement: to build your ad, send proofs, send transactional updates about the edition, keep records of approvals, and understand which marketing channels bring advertisers to the site.",
     ],
     [
       "QR tracking",
@@ -26,7 +28,7 @@ export default function PrivacyPage() {
     ],
     [
       "Sharing",
-      "We share information only with the service providers needed to run the site and fulfill the edition (for example payment processing, email delivery, hosting, printing and mailing). We do not sell your information.",
+      "We share information only with the service providers needed to run the site and fulfill the edition, such as analytics, payment processing, email delivery, hosting, printing and mailing providers. We do not sell your information.",
     ],
     [
       "Contact",
