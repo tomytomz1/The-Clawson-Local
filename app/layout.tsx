@@ -26,6 +26,9 @@ export const metadata: Metadata = {
   },
   description:
     "Category-exclusive local advertising for businesses serving Clawson, Michigan. Join the Founder’s Edition of The Clawson Local.",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     siteName: site.name,
     type: "website",
