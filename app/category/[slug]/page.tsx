@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { CategoryViewTracker } from "@/components/analytics/events";
 import { ClaimPanel } from "@/components/inventory/claim-panel";
 import { FaqList } from "@/components/marketing/faq-list";
 import { MailerMockup } from "@/components/marketing/mailer-mockup";
@@ -57,6 +58,13 @@ export default async function CategoryPage({ params, searchParams }: PageProps<"
 
   return (
     <>
+      <CategoryViewTracker
+        categorySlug={category.slug}
+        categoryName={category.displayName}
+        campaignName={campaign.campaignName}
+        marketName={campaign.marketName}
+        value={campaign.priceCents / 100}
+      />
       <section aria-labelledby="category-heading" className="bg-paper">
         <div className="container-page grid gap-10 py-8 sm:py-14 lg:grid-cols-[1.25fr_1fr] lg:gap-14">
           <div>
