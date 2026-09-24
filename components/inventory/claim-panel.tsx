@@ -1,3 +1,4 @@
+import { TrackedCheckoutForm } from "@/components/analytics/events";
 import { site } from "@/config/site";
 import { formatCampaignPrice, formatReachCount, isCheckoutOpen } from "@/lib/campaign/format";
 import type { CategoryInventory } from "@/lib/inventory/progress";
@@ -96,7 +97,13 @@ export function ClaimPanel({
 
         <div className="mt-6">
           {status === "AVAILABLE" && checkoutEnabled && isCheckoutOpen(campaign) && (
-            <form action="/api/checkout" method="post">
+            <TrackedCheckoutForm
+              categorySlug={category.slug}
+              categoryName={category.displayName}
+              campaignName={campaign.campaignName}
+              marketName={campaign.marketName}
+              value={campaign.priceCents / 100}
+            >
               <input type="hidden" name="category" value={category.slug} />
               <button type="submit" className="btn-primary w-full" aria-describedby="checkout-note">
                 Claim for {price}
@@ -105,7 +112,7 @@ export function ClaimPanel({
                 Secure checkout by Stripe. {name} is held for you for about {campaign.reservationMinutes} minutes
                 while you pay; it is yours once payment is confirmed.
               </p>
-            </form>
+            </TrackedCheckoutForm>
           )}
           {status === "AVAILABLE" && !(checkoutEnabled && isCheckoutOpen(campaign)) && (
             <>
