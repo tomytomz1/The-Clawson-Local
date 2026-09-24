@@ -16,7 +16,7 @@ export default function PrivacyPage() {
     ],
     [
       "Analytics and marketing measurement",
-      "We use Google Analytics to understand site usage and marketing performance, including page visits, category interest, checkout starts, purchases, traffic sources and campaign parameters such as UTM tags. We configure analytics so private checkout identifiers and advertiser contact information are not intentionally sent to Google Analytics.",
+      "We use Google Analytics and, when paid Meta advertising is active, the Meta Pixel to understand site usage and marketing performance. This can include page visits, category interest, checkout starts, purchases, traffic sources and campaign parameters such as UTM tags. We configure these tools so private checkout identifiers and advertiser contact information are not intentionally sent as marketing-event data.",
     ],
     [
       "How we use it",
@@ -28,7 +28,7 @@ export default function PrivacyPage() {
     ],
     [
       "Sharing",
-      "We share information only with the service providers needed to run the site and fulfill the edition, such as analytics, payment processing, email delivery, hosting, printing and mailing providers. We do not sell your information.",
+      "We share information only with the service providers needed to run the site and fulfill the edition, such as analytics and advertising measurement, payment processing, email delivery, hosting, printing and mailing providers. We do not sell your information.",
     ],
     [
       "Contact",
