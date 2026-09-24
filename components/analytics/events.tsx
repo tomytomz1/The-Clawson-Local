@@ -3,6 +3,7 @@
 import type { FormEvent, ReactNode } from "react";
 import { useEffect } from "react";
 import { sanitizedPageLocation } from "./google-analytics";
+import { trackMetaEvent } from "./meta-pixel";
 
 type EventParams = Record<string, unknown>;
 
@@ -39,6 +40,17 @@ function item(categorySlug: string, categoryName: string, campaignName: string, 
   };
 }
 
+function metaContent(categorySlug: string, categoryName: string, campaignName: string, marketName: string, value: number) {
+  return {
+    content_ids: [categorySlug],
+    content_name: categoryName,
+    content_category: `${marketName} — ${campaignName}`,
+    content_type: "product",
+    value,
+    currency: "USD",
+  };
+}
+
 export function CategoryViewTracker({
   categorySlug,
   categoryName,
@@ -58,6 +70,7 @@ export function CategoryViewTracker({
       value,
       items: [item(categorySlug, categoryName, campaignName, marketName)],
     });
+    trackMetaEvent("ViewContent", metaContent(categorySlug, categoryName, campaignName, marketName, value));
   }, [categorySlug, categoryName, campaignName, marketName, value]);
 
   return null;
@@ -85,6 +98,7 @@ export function TrackedCheckoutForm({
       transport_type: "beacon",
       items: [item(categorySlug, categoryName, campaignName, marketName)],
     });
+    trackMetaEvent("InitiateCheckout", metaContent(categorySlug, categoryName, campaignName, marketName, value));
   }
 
   return (
@@ -112,7 +126,9 @@ export function PurchaseTracker({
   currency: string;
 }) {
   useEffect(() => {
-    const dedupeKey = `ga4-purchase:${transactionId}`;
+    // A single browser session must never report the same confirmed purchase twice,
+    // regardless of which analytics destination is configured.
+    const dedupeKey = `purchase-event:${transactionId}`;
     if (sessionStorage.getItem(dedupeKey)) return;
 
     track("purchase", {
@@ -120,6 +136,11 @@ export function PurchaseTracker({
       value,
       currency: currency.toUpperCase(),
       items: [item(categorySlug, categoryName, campaignName, marketName)],
+    });
+    trackMetaEvent("Purchase", {
+      ...metaContent(categorySlug, categoryName, campaignName, marketName, value),
+      currency: currency.toUpperCase(),
+      order_id: transactionId,
     });
     sessionStorage.setItem(dedupeKey, "1");
   }, [transactionId, categorySlug, categoryName, campaignName, marketName, value, currency]);
