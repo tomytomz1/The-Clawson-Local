@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PurchaseTracker } from "@/components/analytics/events";
 import { AutoRefresh } from "@/components/checkout/auto-refresh";
 import { PageHeader } from "@/components/ui/page-header";
 import { site } from "@/config/site";
@@ -65,6 +66,15 @@ export default async function CheckoutSuccessPage({
     const intakeHref = await intakeLinkFor(reservation.advertiserId);
     return (
       <>
+        <PurchaseTracker
+          transactionId={reservation.id}
+          categorySlug={reservation.categorySlug}
+          categoryName={reservation.categoryName}
+          campaignName={reservation.campaignName}
+          marketName={reservation.marketName}
+          value={reservation.amountCents / 100}
+          currency={reservation.currency}
+        />
         <PageHeader
           eyebrow={`${site.name} • ${edition}`}
           title="Your category is secured."
@@ -75,18 +85,15 @@ export default async function CheckoutSuccessPage({
                 Submit your ad materials
               </a>
               <p className="mt-4">
-                We&rsquo;ll use these materials to create your ad and send you
-                a proof before anything prints.
+                We&rsquo;ll use these materials to create your ad and send you a proof before anything prints.
               </p>
               <p className="mt-3 text-base">
-                This link is private to your business. Bookmark it to come
-                back later.
+                This link is private to your business. Bookmark it to come back later.
               </p>
             </>
           ) : (
             <p>
-              Payment confirmed. We&apos;ll contact you to collect your ad
-              materials.
+              Payment confirmed. We&apos;ll contact you to collect your ad materials.
             </p>
           )}
         </PageHeader>
@@ -129,9 +136,7 @@ export default async function CheckoutSuccessPage({
         title="Payment received. We’re confirming your category."
       >
         <p>
-          This usually takes a few seconds. If this page doesn&rsquo;t update,
-          don&rsquo;t pay again. We&rsquo;ll show the next step here once your
-          category is confirmed.
+          This usually takes a few seconds. If this page doesn&rsquo;t update, don&rsquo;t pay again. We&rsquo;ll show the next step here once your category is confirmed.
           {reservation.status === "PROCESSING" &&
             " Your payment method can take a few days to settle; the category stays held for you until it does."}
         </p>
