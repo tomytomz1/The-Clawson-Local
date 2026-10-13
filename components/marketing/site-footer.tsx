@@ -45,6 +45,7 @@ export function SiteFooter() {
       <div className="border-t border-rule">
         <p className="container-page py-4 text-xs text-ink-muted">
           © {year} {site.legalName ?? site.name}. All rights reserved.
+          <span className="mt-2 block">Built by <a href="https://beltran.digital/" target="_blank" rel="noopener" className="text-ink-soft underline underline-offset-4 hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4">Beltrán Digital</a></span>
         </p>
       </div>
     </footer>
